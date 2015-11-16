@@ -3,14 +3,23 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:valueConverters="clr-namespace:DotWatcher.ValueConverters"
         Title="DOT Visualizer" Height="350" Width="525">
-    <StackPanel Orientation="Vertical">
-        <Menu IsMainMenu="True">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        
+        <Menu IsMainMenu="True" Grid.Row="0" Grid.Column="0">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open..." Click="OpenMenuItem_Click"/>
             </MenuItem>
         </Menu>
-        <ScrollViewer>
-            <Image Source="{Binding Path=ImagePath, Converter={valueConverters:ImagePathConverter}}"></Image>
+        <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+            <Image Stretch="None" Source="{Binding Path=ImagePath, Converter={valueConverters:ImagePathConverter}}"></Image>
         </ScrollViewer>
-    </StackPanel>
+    </Grid>
 </Window>
