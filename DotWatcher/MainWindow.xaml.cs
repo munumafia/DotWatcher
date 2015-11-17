@@ -17,10 +17,13 @@ namespace DotWatcher
         private readonly FileSystemWatcher _DotFileWatcher;
         private readonly MainWindowViewModel _ViewModel;
 
+
         public MainWindow()
         {
             InitializeComponent();
+
             DataContext = _ViewModel = new MainWindowViewModel();
+
             _DotFileImageConverter = new DotFileImageConverter(ConfigurationManager.AppSettings["toolPath"]);
 
             _DotFileWatcher = new FileSystemWatcher();
@@ -31,6 +34,8 @@ namespace DotWatcher
         {
             var imageFormat = (ImageFormat)Enum.Parse(typeof(ImageFormat), ConfigurationManager.AppSettings["outputFormat"], true);
             var imagePath = await _DotFileImageConverter.ConvertAsync(filePath, imageFormat);
+
+            _ViewModel.DotFilePath = filePath;
             _ViewModel.ImagePath = imagePath;
         }
 
@@ -62,6 +67,20 @@ namespace DotWatcher
             _DotFileWatcher.EnableRaisingEvents = true;
 
             await HandleDotFileChanged(fileInfo.FullName);
+        }
+
+        private async void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            var dialogBuilder = new SaveFileDialogBuilder();
+            var dialog = dialogBuilder.Build();
+
+            var result = dialog.ShowDialog();
+            if (result == false)
+            {
+                return;
+            }
+
+            await _DotFileImageConverter.ConvertAsync(_ViewModel.DotFilePath, dialog.FileName);
         }
     }
 }

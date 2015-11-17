@@ -7,7 +7,24 @@ namespace DotWatcher.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
+        private string _DotFilePath;
         private string _ImagePath;
+
+        public bool DotFileOpened
+        {
+            get { return !string.IsNullOrEmpty(DotFilePath); }
+        }
+
+        public string DotFilePath
+        {
+            get { return _DotFilePath; }
+            set
+            {
+                _DotFilePath = value;
+                OnPropertyChanged();
+                OnPropertyChanged("DotFileOpened");
+            }
+        }
 
         public string ImagePath
         {

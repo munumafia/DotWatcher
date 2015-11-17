@@ -16,6 +16,7 @@
         <Menu IsMainMenu="True" Grid.Row="0" Grid.Column="0">
             <MenuItem Header="_File">
                 <MenuItem Header="_Open..." Click="OpenMenuItem_Click"/>
+                <MenuItem Header="_Save As..." Click="SaveAsMenuItem_Click" IsEnabled="{Binding Path=DotFileOpened}"/>
             </MenuItem>
         </Menu>
         <ScrollViewer Grid.Row="1" Grid.Column="0" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">

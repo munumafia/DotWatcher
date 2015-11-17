@@ -2,7 +2,9 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using DotWatcher.Parser;
 
 namespace DotWatcher
 {
@@ -13,6 +15,7 @@ namespace DotWatcher
         public DotFileImageConverter(string toolPath)
         {
             _ToolPath = toolPath;
+
         }
 
         public Task ConvertAsync(string dotFile, string outputFile, ImageFormat imageFormat)
@@ -34,7 +37,7 @@ namespace DotWatcher
                         Arguments = string.Format(@"-T{0} -o ""{1}"" ""{2}""", outputFormat, outputFile, dotFile),
                         CreateNoWindow = true,
                         FileName = Path.Combine(_ToolPath, "dot.exe"),
-
+                        UseShellExecute = false
                     }
                 };
 
@@ -47,6 +50,19 @@ namespace DotWatcher
         {
             var outputFile = Path.GetTempFileName();
             return ConvertAsync(dotFile, outputFile, imageFormat).ContinueWith((task) => outputFile);
+        }
+
+        public Task ConvertAsync(string dotFile, string outputFile)
+        {
+            var fileinfo = new FileInfo(outputFile);
+            var imageFormatEnumParser = new ImageFormatEnumParser();
+
+            var imageFormat = imageFormatEnumParser.Parse()
+                .Where(ef => ef.Extensions.Contains(fileinfo.Extension))
+                .Select(ef => ef.Field.Name)
+                .First();
+
+            return ConvertAsync(dotFile, outputFile, (ImageFormat)Enum.Parse(typeof(ImageFormat), imageFormat));
         }
     }
 }

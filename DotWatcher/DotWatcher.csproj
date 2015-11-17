@@ -54,8 +54,11 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Attributes\FormatInfoAttribute.cs" />
     <Compile Include="DotFileImageConverter.cs" />
     <Compile Include="ImageFormat.cs" />
+    <Compile Include="Parser\ImageFormatEnumParser.cs" />
+    <Compile Include="SaveFileDialogBuilder.cs" />
     <Compile Include="ValueConverters\BaseConverter.cs" />
     <Compile Include="ValueConverters\ImagePathConverter.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
