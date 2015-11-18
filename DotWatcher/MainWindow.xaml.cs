@@ -1,8 +1,5 @@
-﻿using System;
-using System.Configuration;
-using System.IO;
-using System.Threading.Tasks;
-using System.Windows;
+﻿using System.Windows;
+using DotWatcher.Controls;
 using DotWatcher.ViewModels;
 using Microsoft.Win32;
 
@@ -13,35 +10,13 @@ namespace DotWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
-        private readonly DotFileImageConverter _DotFileImageConverter;
-        private readonly FileSystemWatcher _DotFileWatcher;
         private readonly MainWindowViewModel _ViewModel;
-
 
         public MainWindow()
         {
             InitializeComponent();
 
             DataContext = _ViewModel = new MainWindowViewModel();
-
-            _DotFileImageConverter = new DotFileImageConverter(ConfigurationManager.AppSettings["toolPath"]);
-
-            _DotFileWatcher = new FileSystemWatcher();
-            _DotFileWatcher.Changed += OnDotFileChanged;
-        }
-
-        private async Task HandleDotFileChanged(string filePath)
-        {
-            var imageFormat = (ImageFormat)Enum.Parse(typeof(ImageFormat), ConfigurationManager.AppSettings["outputFormat"], true);
-            var imagePath = await _DotFileImageConverter.ConvertAsync(filePath, imageFormat);
-
-            _ViewModel.DotFilePath = filePath;
-            _ViewModel.ImagePath = imagePath;
-        }
-
-        private async void OnDotFileChanged(object sender, FileSystemEventArgs e)
-        {
-            await HandleDotFileChanged(e.FullPath);
         }
 
         private async void OpenMenuItem_Click(object sender, RoutedEventArgs e)
@@ -58,15 +33,10 @@ namespace DotWatcher
                 return;
             }
 
-            var fileInfo = new FileInfo(openDialog.FileName);
+            var tab = new DotFileTabItem(openDialog.FileName);
+            await tab.LoadAsync();
 
-            _DotFileWatcher.EnableRaisingEvents = false;
-            _DotFileWatcher.Path = fileInfo.DirectoryName;
-            _DotFileWatcher.Filter = fileInfo.Name;
-            _DotFileWatcher.NotifyFilter = NotifyFilters.LastWrite;
-            _DotFileWatcher.EnableRaisingEvents = true;
-
-            await HandleDotFileChanged(fileInfo.FullName);
+            _ViewModel.Tabs.Add(tab);
         }
 
         private async void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
@@ -75,12 +45,10 @@ namespace DotWatcher
             var dialog = dialogBuilder.Build();
 
             var result = dialog.ShowDialog();
-            if (result == false)
+            if (result != false && Tabs.SelectedTab != null)
             {
-                return;
+                await Tabs.SelectedTab.SaveImageAsync(dialog.FileName);
             }
-
-            await _DotFileImageConverter.ConvertAsync(_ViewModel.DotFilePath, dialog.FileName);
         }
     }
 }

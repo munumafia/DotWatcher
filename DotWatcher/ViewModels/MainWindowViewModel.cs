@@ -1,5 +1,7 @@
-﻿using System.ComponentModel;
+﻿using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using DotWatcher.Controls;
 
 namespace DotWatcher.ViewModels
 {
@@ -7,33 +9,11 @@ namespace DotWatcher.ViewModels
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
-        private string _DotFilePath;
-        private string _ImagePath;
+        public ObservableCollection<DotFileTabItem> Tabs { get; set; }
 
-        public bool DotFileOpened
+        public MainWindowViewModel()
         {
-            get { return !string.IsNullOrEmpty(DotFilePath); }
-        }
-
-        public string DotFilePath
-        {
-            get { return _DotFilePath; }
-            set
-            {
-                _DotFilePath = value;
-                OnPropertyChanged();
-                OnPropertyChanged("DotFileOpened");
-            }
-        }
-
-        public string ImagePath
-        {
-            get { return _ImagePath; }
-            set
-            {
-                _ImagePath = value;
-                OnPropertyChanged();
-            }
+            Tabs = new ObservableCollection<DotFileTabItem>();
         }
 
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
