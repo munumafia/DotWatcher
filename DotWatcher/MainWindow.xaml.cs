@@ -24,19 +24,23 @@ namespace DotWatcher
             var openDialog = new OpenFileDialog
             {
                 DefaultExt = ".dot",
-                Filter = "DOT Files(*.dot;*.gv)|*.dot;*.gv|All files (*.*)|*.*"
+                Filter = "DOT Files(*.dot;*.gv)|*.dot;*.gv|All files (*.*)|*.*",
+                Multiselect = true
             };
 
-            var fileSelected = openDialog.ShowDialog();
-            if (fileSelected == false)
+            var filesSelected = openDialog.ShowDialog();
+            if (filesSelected == false)
             {
                 return;
             }
 
-            var tab = new DotFileTabItem(openDialog.FileName);
-            await tab.LoadAsync();
+            foreach (var file in openDialog.FileNames)
+            {
+                var tab = new DotFileTabItem(file);
+                await tab.LoadAsync();
 
-            _ViewModel.Tabs.Add(tab);
+                _ViewModel.Tabs.Add(tab);
+            }
         }
 
         private async void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
