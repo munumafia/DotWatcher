@@ -8,8 +8,14 @@ using DotWatcher.Annotations;
 
 namespace DotWatcher.Controls
 {
+    /// <summary>
+    /// Represents a tab in the DotFileTabControl user control
+    /// </summary>
     public class DotFileTabItem : INotifyPropertyChanged
     {
+        /// <summary>
+        /// Event raised everytime a view model property is changed
+        /// </summary>
         public event PropertyChangedEventHandler PropertyChanged;
 
         private bool _ContentUpdated;
@@ -19,6 +25,10 @@ namespace DotWatcher.Controls
         private readonly DotFileImageConverter _DotFileImageConverter;
         private readonly FileSystemWatcher _DotFileWatcher;
 
+        /// <summary>
+        /// Whether or not the tab content has been updated and needs to be
+        /// shown to the user
+        /// </summary>
         public bool ContentUpdated
         {
             get { return _ContentUpdated; }
@@ -29,6 +39,9 @@ namespace DotWatcher.Controls
             }
         }
 
+        /// <summary>
+        /// The path to the dot file that the tab is showing an image for
+        /// </summary>
         public string DotFilePath
         {
             get { return _DotFilePath; }
@@ -41,6 +54,10 @@ namespace DotWatcher.Controls
             }
         }
 
+        /// <summary>
+        /// The path to the dot file image that the tab item generated and is
+        /// showing
+        /// </summary>
         public string ImagePath
         {
             get { return _ImagePath; }
@@ -53,6 +70,9 @@ namespace DotWatcher.Controls
             }
         }
 
+        /// <summary>
+        /// Whether or not the tab is currently selected by the DotFileTabControl
+        /// </summary>
         public bool IsSelected
         {
             get { return _IsSelected; }
@@ -63,6 +83,9 @@ namespace DotWatcher.Controls
             }
         }
 
+        /// <summary>
+        /// The title of the tab item
+        /// </summary>
         public string Title
         {
             get
@@ -73,6 +96,10 @@ namespace DotWatcher.Controls
             }
         }
 
+        /// <summary>
+        /// Constructs a new DotFileTabItem
+        /// </summary>
+        /// <param name="dotFilePath">The file path to the dot file to show in the tab</param>
         public DotFileTabItem(string dotFilePath)
         {
             _DotFileWatcher = new FileSystemWatcher();
@@ -84,11 +111,21 @@ namespace DotWatcher.Controls
             DotFilePath = dotFilePath;
         }
 
+        /// <summary>
+        /// Event handler used to regenerate the image shown in the tab whenever the dot file is changed
+        /// on disk
+        /// </summary>
+        /// <param name="sender">The object that raised the event</param>
+        /// <param name="e">The event arguments</param>
         private async void OnDotFileChanged(object sender, FileSystemEventArgs e)
         {
             await LoadAsync();
         }
 
+        /// <summary>
+        /// Loads the contents of the tab
+        /// </summary>
+        /// <returns>Task representing the async operation</returns>
         public async Task LoadAsync()
         {
             var imageFormat = (ImageFormat)Enum.Parse(typeof(ImageFormat), ConfigurationManager.AppSettings["outputFormat"], true);
@@ -103,11 +140,20 @@ namespace DotWatcher.Controls
             _DotFileWatcher.EnableRaisingEvents = true;
         }
 
+        /// <summary>
+        /// Saves the dot file image rendered by the tab to the specified file path
+        /// </summary>
+        /// <param name="filename">The filename to save the image as</param>
+        /// <returns>Task representing the async operation</returns>
         public async Task SaveImageAsync(string filename)
         {
             await _DotFileImageConverter.ConvertAsync(DotFilePath, filename);
         }
 
+        /// <summary>
+        /// Method used to raise a PropertyChanged event when a view model property changes
+        /// </summary>
+        /// <param name="propertyName"></param>
         [NotifyPropertyChangedInvocator]
         protected virtual void OnPropertyChanged([CallerMemberName] string propertyName = null)
         {

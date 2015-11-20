@@ -8,21 +8,35 @@ using DotWatcher.Parser;
 
 namespace DotWatcher
 {
+    /// <summary>
+    /// Used to convert a dot file containing a graph definition to an image file
+    /// </summary>
     public class DotFileImageConverter
     {
-        private readonly string _ToolPath;
+        private readonly string _GraphVizBinPath;
 
-        public DotFileImageConverter(string toolPath)
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <param name="graphVizBinPath">The path to the GraphViz binary files</param>
+        public DotFileImageConverter(string graphVizBinPath)
         {
-            _ToolPath = toolPath;
+            _GraphVizBinPath = graphVizBinPath;
 
         }
 
-        public Task ConvertAsync(string dotFile, string outputFile, ImageFormat imageFormat)
+        /// <summary>
+        /// Converts a dot file to the requested image format
+        /// </summary>
+        /// <param name="dotFilePath">The path to the dot file to convert</param>
+        /// <param name="outputFilePath">The file path of where to save the image</param>
+        /// <param name="imageFormat">The image format to use when converitng the dot file</param>
+        /// <returns>A task representing the asynchronous operation</returns>
+        public Task ConvertAsync(string dotFilePath, string outputFilePath, ImageFormat imageFormat)
         {
-            if (!File.Exists(dotFile))
+            if (!File.Exists(dotFilePath))
             {
-                throw new ArgumentException("The supplied dot file does not exist", "dotFile");
+                throw new ArgumentException("The supplied dot file does not exist", "dotFilePath");
             }
 
             return Task.Run(() =>
@@ -34,9 +48,9 @@ namespace DotWatcher
                 {
                     StartInfo = new ProcessStartInfo
                     {
-                        Arguments = string.Format(@"-T{0} -o ""{1}"" ""{2}""", outputFormat, outputFile, dotFile),
+                        Arguments = string.Format(@"-T{0} -o ""{1}"" ""{2}""", outputFormat, outputFilePath, dotFilePath),
                         CreateNoWindow = true,
-                        FileName = Path.Combine(_ToolPath, "dot.exe"),
+                        FileName = Path.Combine(_GraphVizBinPath, "dot.exe"),
                         UseShellExecute = false
                     }
                 };
@@ -46,15 +60,28 @@ namespace DotWatcher
             });
         }
 
-        public Task<string> ConvertAsync(string dotFile, ImageFormat imageFormat)
+        /// <summary>
+        /// Converts a dot file to the requested image format
+        /// </summary>
+        /// <param name="dotFilePath">The path to the dot file to convert</param>
+        /// <param name="imageFormat">The image format to use when converting the dot file</param>
+        /// <returns>The file path of the image that was generated</returns>
+        public Task<string> ConvertAsync(string dotFilePath, ImageFormat imageFormat)
         {
             var outputFile = Path.GetTempFileName();
-            return ConvertAsync(dotFile, outputFile, imageFormat).ContinueWith((task) => outputFile);
+            return ConvertAsync(dotFilePath, outputFile, imageFormat).ContinueWith((task) => outputFile);
         }
 
-        public Task ConvertAsync(string dotFile, string outputFile)
+        /// <summary>
+        /// Converts a dot file to an image file, using the file extension of the <i>outputFilePath</i>
+        /// parameter to determine the file format to use
+        /// </summary>
+        /// <param name="dotFilePath">The path to the dot file to convert</param>
+        /// <param name="outputFilePath">The file path of where to save the image</param>
+        /// <returns>A task representing the async operation</returns>
+        public Task ConvertAsync(string dotFilePath, string outputFilePath)
         {
-            var fileinfo = new FileInfo(outputFile);
+            var fileinfo = new FileInfo(outputFilePath);
             var imageFormatEnumParser = new ImageFormatEnumParser();
 
             var imageFormat = imageFormatEnumParser.Parse()
@@ -62,7 +89,7 @@ namespace DotWatcher
                 .Select(ef => ef.Field.Name)
                 .First();
 
-            return ConvertAsync(dotFile, outputFile, (ImageFormat)Enum.Parse(typeof(ImageFormat), imageFormat));
+            return ConvertAsync(dotFilePath, outputFilePath, (ImageFormat)Enum.Parse(typeof(ImageFormat), imageFormat));
         }
     }
 }

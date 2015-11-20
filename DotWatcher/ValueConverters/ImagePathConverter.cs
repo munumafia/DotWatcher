@@ -10,9 +10,16 @@ namespace DotWatcher.ValueConverters
     /// </summary>
     public class ImagePathConverter : BaseConverter, IValueConverter
     {
+        /// <summary>
+        /// Default constructor
+        /// </summary>
+        /// <remarks>
+        /// Visual Studio was showing a warning about there not being a default public constructor, since the 
+        /// default constructor inherited from BaseConverter is protected. This was added as a work-around to
+        /// keep Visual Studio from driving me nuts
+        /// </remarks>
         public ImagePathConverter()
         {
-            // Default constructor is protected
         }
 
         /// <summary>
