@@ -1,17 +1,16 @@
-﻿
-using System;
+﻿using System;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using DotWatcher.Parser;
 
-namespace DotWatcher
+namespace DotWatcher.Services
 {
     /// <summary>
     /// Used to convert a dot file containing a graph definition to an image file
     /// </summary>
-    public class DotFileImageConverter
+    public class DotFileImageConverterService : IDotFileImageConverterService
     {
         private readonly string _GraphVizBinPath;
 
@@ -19,7 +18,7 @@ namespace DotWatcher
         /// Default constructor
         /// </summary>
         /// <param name="graphVizBinPath">The path to the GraphViz binary files</param>
-        public DotFileImageConverter(string graphVizBinPath)
+        public DotFileImageConverterService(string graphVizBinPath)
         {
             _GraphVizBinPath = graphVizBinPath;
 

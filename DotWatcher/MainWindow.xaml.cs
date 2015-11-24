@@ -1,5 +1,5 @@
 ﻿using System.Windows;
-using DotWatcher.Controls;
+using DotWatcher.Builders;
 using DotWatcher.ViewModels;
 using Microsoft.Win32;
 
@@ -10,13 +10,20 @@ namespace DotWatcher
     /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly ISaveFileDialogBuilder _SaveFileDialogBuilder;
+        private readonly IDotFileTabItemBuilder _DotFileTabItemBuilder;
         private readonly MainWindowViewModel _ViewModel;
 
         /// <summary>
         /// Default constructor
         /// </summary>
-        public MainWindow()
+        /// <param name="saveFileDialogBuilder">The ISaveFileDialogBuilder implementation to use</param>
+        /// <param name="dotFileTabItemBuilder">The IDotFileTabItemBuilder implementation to use</param>
+        public MainWindow(ISaveFileDialogBuilder saveFileDialogBuilder, IDotFileTabItemBuilder dotFileTabItemBuilder)
         {
+            _SaveFileDialogBuilder = saveFileDialogBuilder;
+            _DotFileTabItemBuilder = dotFileTabItemBuilder;
+
             InitializeComponent();
 
             DataContext = _ViewModel = new MainWindowViewModel();
@@ -45,9 +52,7 @@ namespace DotWatcher
 
             foreach (var file in openDialog.FileNames)
             {
-                var tab = new DotFileTabItem(file);
-                await tab.LoadAsync();
-
+                var tab = await _DotFileTabItemBuilder.BuildAsync(file);
                 _ViewModel.DotFileTabs.Add(tab);
             }
         }
@@ -60,8 +65,7 @@ namespace DotWatcher
         /// <param name="e">The event arguments</param>
         private async void SaveAsMenuItem_Click(object sender, RoutedEventArgs e)
         {
-            var dialogBuilder = new SaveFileDialogBuilder();
-            var dialog = dialogBuilder.Build();
+            var dialog = _SaveFileDialogBuilder.Build();
 
             var result = dialog.ShowDialog();
             if (result != false && Tabs.SelectedTab != null)

@@ -34,6 +34,14 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="StructureMap.Net4, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.Net4.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Data" />
@@ -55,15 +63,19 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Attributes\FormatInfoAttribute.cs" />
+    <Compile Include="Builders\DotFileTabItemBuilder.cs" />
+    <Compile Include="Builders\IDotFileTabItemBuilder.cs" />
+    <Compile Include="Builders\ISaveFileDialogBuilder.cs" />
+    <Compile Include="Builders\SaveFileDialogBuilder.cs" />
     <Compile Include="Controls\DotFileTabControl.xaml.cs">
       <DependentUpon>DotFileTabControl.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\DotFileTabItem.cs" />
-    <Compile Include="DotFileImageConverter.cs" />
     <Compile Include="ImageFormat.cs" />
     <Compile Include="Parser\ImageFormatEnumParser.cs" />
     <Compile Include="Properties\Annotations1.cs" />
-    <Compile Include="SaveFileDialogBuilder.cs" />
+    <Compile Include="Services\DotFileImageConverterService.cs" />
+    <Compile Include="Services\IDotFileImageConverterService.cs" />
     <Compile Include="ValueConverters\BaseConverter.cs" />
     <Compile Include="ValueConverters\ImagePathConverter.cs" />
     <Compile Include="ViewModels\MainWindowViewModel.cs" />
@@ -102,6 +114,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>

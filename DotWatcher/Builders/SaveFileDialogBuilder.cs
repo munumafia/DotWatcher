@@ -4,13 +4,13 @@ using System.Text;
 using DotWatcher.Parser;
 using Microsoft.Win32;
 
-namespace DotWatcher
+namespace DotWatcher.Builders
 {
     /// <summary>
     /// Builder used to build a new SaveFileDialog instance for saving something
     /// an image file
     /// </summary>
-    public class SaveFileDialogBuilder
+    public class SaveFileDialogBuilder : ISaveFileDialogBuilder
     {
         /// <summary>
         /// Builds a new SaveFileDialog instance for saving something as an image file

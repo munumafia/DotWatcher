@@ -5,6 +5,7 @@ using System.IO;
 using System.Runtime.CompilerServices;
 using System.Threading.Tasks;
 using DotWatcher.Annotations;
+using DotWatcher.Services;
 
 namespace DotWatcher.Controls
 {
@@ -22,7 +23,7 @@ namespace DotWatcher.Controls
         private string _DotFilePath;
         private string _ImagePath;
         private bool _IsSelected;
-        private readonly DotFileImageConverter _DotFileImageConverter;
+        private readonly IDotFileImageConverterService _DotFileImageConverterService;
         private readonly FileSystemWatcher _DotFileWatcher;
 
         /// <summary>
@@ -99,16 +100,15 @@ namespace DotWatcher.Controls
         /// <summary>
         /// Constructs a new DotFileTabItem
         /// </summary>
+        /// <param name="dotFileImageConverterService">The IDotFileImageConverterService implementation to use</param>
         /// <param name="dotFilePath">The file path to the dot file to show in the tab</param>
-        public DotFileTabItem(string dotFilePath)
+        public DotFileTabItem(IDotFileImageConverterService dotFileImageConverterService, string dotFilePath)
         {
+            _DotFileImageConverterService = dotFileImageConverterService;
+            DotFilePath = dotFilePath;
+
             _DotFileWatcher = new FileSystemWatcher();
             _DotFileWatcher.Changed += OnDotFileChanged;
-
-            _DotFileImageConverter = new DotFileImageConverter(
-                ConfigurationManager.AppSettings["ToolPath"]);
-
-            DotFilePath = dotFilePath;
         }
 
         /// <summary>
@@ -129,7 +129,7 @@ namespace DotWatcher.Controls
         public async Task LoadAsync()
         {
             var imageFormat = (ImageFormat)Enum.Parse(typeof(ImageFormat), ConfigurationManager.AppSettings["outputFormat"], true);
-            ImagePath = await _DotFileImageConverter.ConvertAsync(DotFilePath, imageFormat);
+            ImagePath = await _DotFileImageConverterService.ConvertAsync(DotFilePath, imageFormat);
 
             var fileInfo = new FileInfo(DotFilePath);
 
@@ -147,7 +147,7 @@ namespace DotWatcher.Controls
         /// <returns>Task representing the async operation</returns>
         public async Task SaveImageAsync(string filename)
         {
-            await _DotFileImageConverter.ConvertAsync(DotFilePath, filename);
+            await _DotFileImageConverterService.ConvertAsync(DotFilePath, filename);
         }
 
         /// <summary>
